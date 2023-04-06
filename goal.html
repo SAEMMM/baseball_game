@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport">
+
+    <title>Goal | 숫자야구 프로그램 만들기</title>
+    <style>
+        body {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<h1>컴퓨터가 숫자를 생성하였습니다
+    <br>3자리의 랜덤한 숫자를 맞춰보세요🍀</h1>
+
+
+    <form id="form">
+        <p id="check"><span>0</span>번째 시도입니다!</p>
+        <input type="text" id="input">
+        <button onclick="button_onclick()">확인하기</button>
+    </form>
+    <div id="logs"></div>
+
+<script>
+    let count = 0
+    const span = document.querySelector('span')
+    function button_onclick() {
+        count++
+        span.innerText = `${count}`
+    }
+
+    const $input = document.querySelector('#input')
+    const $form = document.querySelector('#form')
+    const $logs = document.querySelector('#logs')
+
+    // 빈 배열 numbers에 1~9의 숫자 넣기
+    const numbers = []
+    for(n = 1; n <= 9; n++) {
+        numbers.push(n)
+    }
+
+    // 랜덤숫자 만들기
+    const answer = []
+    for(n = 0; n < 3; n++) { // 0~2까지 3번 반복
+        const index = Math.floor(Math.random() * numbers.length)
+        answer.push(numbers[index])
+        numbers.splice(index, 1)
+    }
+    console.log(answer)
+
+    const tries = []
+    function checkInput(input) {
+        if(input.length !== 3) {
+            return alert('3자리의 숫자를 입력해 주세요!')
+        }
+        if(new Set(input).size !== 3) { //Set: 중복을 허용하지 않는 특수한 배열(Set을 구할 땐 length가 아닌 size)
+            return alert('중복된 숫자는 입력할 수 없습니다!')
+        }
+        if(tries.includes(input)) {
+            return alert('이미 확인했던 숫자에요!')
+        }
+        return true
+    }
+
+    $form.addEventListener('submit', (event) => {
+            event.preventDefault() // 폼 태그의 기본 동작을 취소하는 코드(submit 될 때, 새로고침 막기)
+            const value = $input.value
+            $input.value = ''
+            const valid = checkInput(value)
+            if (!valid) return
+            if(answer.join('') === value) {
+                $logs.textContent = `${count - 1}번만에 맞히셨습니다!
+                게임을 종료합니다😉`
+                return
+            }
+            // if(tries.length >= 9) {
+            //     const message = document.createTextNode(`틀렸습니다ㅠㅠ 정답은 ${answer.join('')}입니다`)
+            //     $logs.appendChild(message)
+            //     return
+            // }
+            let strike = 0
+            let ball = 0
+            for(i = 0; i < answer.length; i++) {
+                const index = value.indexOf(answer[i])
+                if(index > -1) {
+                    if(index === i) {
+                        strike += 1
+                    } else {
+                        ball += 1
+                    }
+                }
+            }
+            $logs.append(`${value}: ${strike}S ${ball}B`, document.createElement('br'))
+            tries.push(value)
+        })
+
+</script>
+    
+</body>
+</html>
